@@ -1,0 +1,36 @@
+Onboarding Guide
+
+1. Before Your First Day
+Complete all paperwork in the HR portal.
+Set up your company email and Slack account using the credentials sent to your personal email.
+Review the HR Handbook and Code of Conduct.
+
+2. First Week
+Day 1: Orientation session with HR (9am-12pm). Equipment setup with IT (1pm-3pm).
+Day 2: Team introduction and project overview with your manager.
+Day 3: Access setup for all required tools and systems.
+Day 4-5: Shadow a team member and begin reviewing current project documentation.
+
+3. First Month
+Complete all required compliance training modules.
+Set up 1:1 meetings with key stakeholders.
+Draft your 30-60-90 day goals with your manager.
+Join relevant Slack channels and recurring team meetings.
+
+4. First 90 Days
+Complete probation review with your manager at the 90-day mark.
+Deliver at least one small project or contribution independently.
+Provide feedback on the onboarding process to HR.
+
+5. Tools and Access
+Slack: Primary communication tool
+Jira: Project management
+GitHub: Source code
+Confluence: Documentation
+Google Workspace: Email, calendar, documents
+
+6. Key Contacts
+HR: hr@company.com
+IT Support: it-support@company.com
+Facilities: facilities@company.com
+Your Manager: See your offer letter for contact details

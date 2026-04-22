@@ -1,0 +1,7 @@
+.window { display: flex; flex-direction: column; height: calc(100vh - 64px); border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--bg-card); overflow: hidden; }
+.messages { flex: 1; overflow-y: auto; padding: 24px 20px; }
+.empty { text-align: center; padding: 80px 20px; }
+.emptyIcon { font-size: 48px; margin-bottom: 16px; }
+.empty h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.empty p { color: var(--text-secondary); max-width: 400px; margin: 0 auto; }
+.thinking { display: flex; align-items: center; gap: 10px; color: var(--text-secondary); font-size: 14px; padding: 8px 0; }

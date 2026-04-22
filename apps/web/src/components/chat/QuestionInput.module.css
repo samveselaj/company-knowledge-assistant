@@ -1,0 +1,8 @@
+.wrap { display: flex; gap: 10px; align-items: flex-end; padding: 16px 20px; background: var(--bg-secondary); border-top: 1px solid var(--border); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.input {
+  flex: 1; resize: none; min-height: 44px; max-height: 120px;
+  background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text-primary); padding: 12px 14px; font-size: 14px; font-family: inherit; line-height: 1.5;
+}
+.input:focus { border-color: var(--border-focus); outline: none; box-shadow: 0 0 0 3px var(--accent-glow); }
+.send { padding: 12px 24px; white-space: nowrap; }

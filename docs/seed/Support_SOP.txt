@@ -1,0 +1,29 @@
+Support Standard Operating Procedures
+
+1. Ticket Handling
+All support tickets must be acknowledged within 2 hours during business hours.
+Priority 1 (P1) tickets require immediate escalation to the on-call engineer.
+Priority 2 (P2) tickets should be resolved within 8 business hours.
+Priority 3 (P3) tickets should be resolved within 3 business days.
+
+2. Escalation Path
+Level 1: Support Agent - basic troubleshooting and FAQ responses
+Level 2: Senior Support Agent - complex issues and account-level changes
+Level 3: Engineering Support - bugs, system issues, and infrastructure problems
+Level 4: Engineering Manager - critical outages and data loss incidents
+
+3. Customer Communication
+Always use the approved response templates for initial contact.
+Provide ticket number in every communication.
+Update the customer at least once every 24 hours on open tickets.
+Never share internal system details or architecture information with customers.
+
+4. Knowledge Base
+Support agents should consult the internal knowledge base before escalating.
+New solutions must be documented and added to the knowledge base within 48 hours.
+Outdated articles should be flagged for review quarterly.
+
+5. Metrics
+Target first response time: under 2 hours
+Target resolution time: under 24 hours for P2 tickets
+Customer satisfaction target: 4.5/5.0 or above

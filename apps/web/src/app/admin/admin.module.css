@@ -1,0 +1,4 @@
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.statIcon { font-size: 28px; margin-bottom: 12px; }
+.statValue { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+.statLabel { font-size: 13px; color: var(--text-secondary); margin-top: 4px; font-weight: 500; }
