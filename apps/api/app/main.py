@@ -14,6 +14,11 @@ app = FastAPI(
     version="0.1.0",
 )
 
+origins = [
+    "https://company-knowledge-assistant-azure.vercel.app",
+    "http://localhost:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
