@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.routes.health import router as health_router
 from app.api.routes.documents import router as documents_router
@@ -7,12 +8,19 @@ from app.api.routes.chat import router as chat_router
 from app.api.routes.admin import router as admin_router
 from app.api.routes.feedback import router as feedback_router
 from app.core.database import engine, Base
+from app.core.logging import logger
 
 app = FastAPI(
     title="Company Knowledge Assistant API",
     description="RAG-powered internal knowledge assistant",
     version="0.1.0",
 )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    logger.exception(f"Unhandled exception on {request.method} {request.url.path}")
+    return JSONResponse(status_code=500, content={"detail": "internal_server_error"})
 
 origins = [
     "https://company-knowledge-assistant-azure.vercel.app",
