@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { getAdminStats } from "@/lib/api";
 import { AdminStats } from "@/lib/types";
-import styles from "./admin.module.css";
+import PageHeader from "@/components/ui/PageHeader";
+import Surface from "@/components/ui/Surface";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -10,24 +11,27 @@ export default function AdminDashboard() {
   useEffect(() => { getAdminStats().then(setStats).catch(() => {}); }, []);
 
   const cards = stats ? [
-    { label: "Total Documents", value: stats.total_documents, icon: "📄" },
-    { label: "Indexed", value: stats.indexed_documents, icon: "✅", color: "var(--success)" },
-    { label: "Pending", value: stats.pending_documents, icon: "⏳", color: "var(--warning)" },
-    { label: "Failed", value: stats.failed_documents, icon: "❌", color: "var(--danger)" },
-    { label: "Chat Sessions", value: stats.total_sessions, icon: "💬" },
+    { label: "Total documents", value: stats.total_documents },
+    { label: "Indexed", value: stats.indexed_documents },
+    { label: "Pending", value: stats.pending_documents },
+    { label: "Failed", value: stats.failed_documents },
+    { label: "Chat sessions", value: stats.total_sessions },
   ] : [];
 
   return (
-    <div>
-      <div className="page-header"><h1>📊 Dashboard</h1><p>Overview of your knowledge base</p></div>
-      {!stats ? <div className="spinner" /> : (
-        <div className={styles.grid}>
+    <div className="page">
+      <PageHeader
+        eyebrow="Admin"
+        title="Overview"
+        description="A quick snapshot of document volume, indexing health, and chat usage."
+      />
+      {!stats ? <Surface className="state-card">Loading dashboard…</Surface> : (
+        <div className="stats-grid">
           {cards.map((c) => (
-            <div className="card" key={c.label}>
-              <div className={styles.statIcon}>{c.icon}</div>
-              <div className={styles.statValue} style={c.color ? { color: c.color } : {}}>{c.value}</div>
-              <div className={styles.statLabel}>{c.label}</div>
-            </div>
+            <Surface className="stat-card" key={c.label}>
+              <div className="stat-label">{c.label}</div>
+              <div className="stat-value">{c.value}</div>
+            </Surface>
           ))}
         </div>
       )}

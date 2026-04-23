@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.logging import logger
+from app.core.openai_key import resolve_openai_api_key
 from app.schemas.document import DocumentResponse, DocumentListResponse
 from app.schemas.common import StatusResponse
 from app.repositories.documents import (
@@ -84,6 +85,7 @@ def get_documents(
 def trigger_indexing(
     document_id: uuid.UUID,
     db: Session = Depends(get_db),
+    api_key: str = Depends(resolve_openai_api_key),
 ):
     """Trigger the indexing pipeline for a document."""
     doc = get_document_by_id(db, document_id)
@@ -91,7 +93,7 @@ def trigger_indexing(
         raise HTTPException(status_code=404, detail="Document not found")
 
     try:
-        index_document(db, document_id)
+        index_document(db, document_id, api_key=api_key)
         return StatusResponse(status="ok", message="Document indexed successfully")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

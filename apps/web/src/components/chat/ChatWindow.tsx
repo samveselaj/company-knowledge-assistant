@@ -4,7 +4,7 @@ import { ChatMessage as Msg } from "@/lib/types";
 import { askQuestion } from "@/lib/api";
 import MessageBubble from "./MessageBubble";
 import QuestionInput from "./QuestionInput";
-import styles from "./ChatWindow.module.css";
+import Surface from "@/components/ui/Surface";
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -29,20 +29,20 @@ export default function ChatWindow() {
   };
 
   return (
-    <div className={styles.window}>
-      <div className={styles.messages}>
+    <Surface className="chat-shell">
+      <div className="chat-messages">
         {messages.length === 0 && (
-          <div className={styles.empty}>
-            <div className={styles.emptyIcon}>⚡</div>
-            <h2>Company Knowledge Assistant</h2>
-            <p>Ask questions about your uploaded documents and get grounded answers with citations.</p>
+          <div className="chat-empty">
+            <div className="page-eyebrow">Start a conversation</div>
+            <h2>Ask about policies, onboarding, support workflows, or internal docs.</h2>
+            <p>Responses are generated from the indexed knowledge base and include citations when available.</p>
           </div>
         )}
         {messages.map((msg, i) => <MessageBubble key={i} message={msg} />)}
-        {loading && <div className={styles.thinking}><span className="spinner" /> Thinking<span className="loading-dots" /></div>}
+        {loading && <div className="chat-status">Thinking…</div>}
         <div ref={endRef} />
       </div>
       <QuestionInput onSubmit={handleAsk} disabled={loading} />
-    </div>
+    </Surface>
   );
 }

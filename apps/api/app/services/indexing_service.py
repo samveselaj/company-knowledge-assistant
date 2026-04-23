@@ -11,7 +11,7 @@ from app.services.chunking import chunk_pages
 from app.services.embeddings import embed_texts
 
 
-def index_document(db: Session, document_id: uuid.UUID) -> None:
+def index_document(db: Session, document_id: uuid.UUID, api_key: str | None = None) -> None:
     """
     Full indexing pipeline for a document.
 
@@ -48,7 +48,7 @@ def index_document(db: Session, document_id: uuid.UUID) -> None:
 
         # Embed
         texts = [c["content"] for c in chunk_records]
-        vectors = embed_texts(texts)
+        vectors = embed_texts(texts, api_key=api_key)
 
         for chunk, vector in zip(chunk_records, vectors):
             chunk["embedding"] = vector

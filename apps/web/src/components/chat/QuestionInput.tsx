@@ -1,12 +1,12 @@
 "use client";
-import { useState, useRef } from "react";
-import styles from "./QuestionInput.module.css";
+import { useState } from "react";
+import Button from "@/components/ui/Button";
+import Field from "@/components/ui/Field";
 
 type Props = { onSubmit: (question: string) => void; disabled?: boolean };
 
 export default function QuestionInput({ onSubmit, disabled }: Props) {
   const [text, setText] = useState("");
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = () => {
     const q = text.trim();
@@ -20,21 +20,27 @@ export default function QuestionInput({ onSubmit, disabled }: Props) {
   };
 
   return (
-    <div className={styles.wrap}>
-      <textarea
-        ref={inputRef}
-        className={styles.input}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Ask a question about your documents..."
-        rows={1}
-        disabled={disabled}
-        id="question-input"
-      />
-      <button className={`btn-primary ${styles.send}`} onClick={handleSubmit} disabled={!text.trim() || disabled} id="send-button">
-        {disabled ? <span className="spinner" /> : "Send"}
-      </button>
+    <div className="question-input">
+      <div className="question-input-field">
+        <Field
+          multiline
+          label="Ask a question"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask a question about your documents..."
+          rows={3}
+          disabled={disabled}
+          id="question-input"
+          className="question-textarea"
+        />
+        <div className="question-input-meta">
+          <span className="field-hint">Press Enter to send, Shift+Enter for a new line.</span>
+          <Button variant="primary" onClick={handleSubmit} disabled={!text.trim() || disabled} id="send-button">
+            {disabled ? "Sending…" : "Send"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -7,17 +7,20 @@ from app.services.prompt_builder import build_rag_prompt
 from app.services.citation_builder import build_citations
 
 _client: OpenAI | None = None
+_client_api_key: str | None = None
 
 
-def _get_client() -> OpenAI:
+def _get_client(api_key: str | None = None) -> OpenAI:
     """Lazy-initialize the OpenAI client."""
-    global _client
-    if _client is None:
-        _client = OpenAI(api_key=settings.OPENAI_API_KEY)
+    global _client, _client_api_key
+    resolved_api_key = api_key or settings.OPENAI_API_KEY
+    if _client is None or _client_api_key != resolved_api_key:
+        _client = OpenAI(api_key=resolved_api_key)
+        _client_api_key = resolved_api_key
     return _client
 
 
-def generate_answer(question: str, chunks: list) -> dict:
+def generate_answer(question: str, chunks: list, api_key: str | None = None) -> dict:
     """
     Generate a grounded answer from retrieved chunks.
 
@@ -37,7 +40,7 @@ def generate_answer(question: str, chunks: list) -> dict:
     prompt = build_rag_prompt(question, chunks)
     logger.info(f"Generating answer with {settings.CHAT_MODEL}")
 
-    client = _get_client()
+    client = _get_client(api_key)
     response = client.chat.completions.create(
         model=settings.CHAT_MODEL,
         messages=[

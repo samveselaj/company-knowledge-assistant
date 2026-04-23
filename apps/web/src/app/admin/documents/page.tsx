@@ -1,26 +1,57 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { listDocuments } from "@/lib/api";
 import { DocumentItem } from "@/lib/types";
 import DocumentTable from "@/components/admin/DocumentTable";
+import PageHeader from "@/components/ui/PageHeader";
+import Surface from "@/components/ui/Surface";
 
 export default function DocumentsPage() {
   const [docs, setDocs] = useState<DocumentItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchDocs = useCallback(async () => {
+  const fetchDocs = async () => {
     setLoading(true);
     try { const data = await listDocuments(); setDocs(data.documents || []); }
     catch { setDocs([]); }
     finally { setLoading(false); }
+  };
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadDocs() {
+      try {
+        const data = await listDocuments();
+        if (active) {
+          setDocs(data.documents || []);
+        }
+      } catch {
+        if (active) {
+          setDocs([]);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadDocs();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
-  useEffect(() => { fetchDocs(); }, [fetchDocs]);
-
   return (
-    <div>
-      <div className="page-header"><h1>📄 Documents</h1><p>Manage your uploaded documents</p></div>
-      {loading ? <div className="spinner" /> : <DocumentTable documents={docs} onRefresh={fetchDocs} />}
+    <div className="page">
+      <PageHeader
+        eyebrow="Admin"
+        title="Documents"
+        description="Review uploaded files, track indexing status, and manage the current knowledge set."
+      />
+      {loading ? <Surface className="state-card">Loading documents…</Surface> : <DocumentTable documents={docs} onRefresh={fetchDocs} />}
     </div>
   );
 }

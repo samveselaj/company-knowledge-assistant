@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
-import Sidebar from "@/components/ui/Sidebar";
+import AppShell from "@/components/ui/AppShell";
 
 export const metadata: Metadata = {
   title: "Company Knowledge Assistant",
@@ -13,12 +14,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body>
-        <div className="app-shell">
-          <Sidebar />
-          <main className="main-content">{children}</main>
-        </div>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`
+            (function() {
+              try {
+                var saved = localStorage.getItem("company-knowledge-theme");
+                var theme = saved || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+                document.documentElement.dataset.theme = theme;
+              } catch (error) {}
+            })();
+          `}
+        </Script>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

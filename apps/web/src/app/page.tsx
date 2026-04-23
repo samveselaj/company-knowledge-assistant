@@ -1,17 +1,67 @@
-import Link from "next/link";
+import Button from "@/components/ui/Button";
+import PageHeader from "@/components/ui/PageHeader";
+import Surface from "@/components/ui/Surface";
 
 export default function Home() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "80vh", textAlign: "center" }}>
-      <div style={{ fontSize: 64, marginBottom: 24 }}>⚡</div>
-      <h1 style={{ fontSize: 36, fontWeight: 800, letterSpacing: -1, marginBottom: 12 }}>Company Knowledge Assistant</h1>
-      <p style={{ color: "var(--text-secondary)", fontSize: 17, maxWidth: 500, lineHeight: 1.7, marginBottom: 32 }}>
-        Upload internal documents, index them with AI, and get instant answers with citations.
-      </p>
-      <div style={{ display: "flex", gap: 12 }}>
-        <Link href="/chat" className="btn-primary" style={{ padding: "12px 28px", fontSize: 15 }}>Start Chatting →</Link>
-        <Link href="/admin/upload" className="btn-ghost" style={{ padding: "12px 28px", fontSize: 15 }}>Upload Documents</Link>
-      </div>
+    <div className="page">
+      <PageHeader
+        eyebrow="Knowledge Base"
+        title="Company Knowledge Assistant"
+        description="Upload internal documents, index them, and ask grounded questions with citations."
+        actions={
+          <>
+            <Button href="/chat" variant="primary">
+              Open chat
+            </Button>
+            <Button href="/admin/upload">Upload documents</Button>
+          </>
+        }
+      />
+
+      <section className="grid grid-2">
+        <Surface>
+          <div className="page-eyebrow">Assistant</div>
+          <h2 className="section-title">Ask questions in plain language</h2>
+          <p className="section-copy">
+            Search across uploaded materials and get grounded answers with source snippets.
+          </p>
+        </Surface>
+        <Surface>
+          <div className="page-eyebrow">Documents</div>
+          <h2 className="section-title">Manage uploads and indexing</h2>
+          <p className="section-copy">
+            Review document status, upload new files, and keep the knowledge base up to date.
+          </p>
+        </Surface>
+      </section>
+
+      <section className="grid grid-3">
+        <Surface>
+          <div className="page-eyebrow">Chat</div>
+          <p className="section-copy">Ask about policies, onboarding, support workflows, or internal process docs.</p>
+        </Surface>
+        <Surface>
+          <div className="page-eyebrow">Admin</div>
+          <p className="section-copy">Track document counts, indexing status, and uploaded content from one place.</p>
+        </Surface>
+        <Surface>
+          <div className="page-eyebrow">Themes</div>
+          <p className="section-copy">Light and dark modes use the same spacing, contrast, and component structure.</p>
+        </Surface>
+      </section>
+
+      <Surface>
+        <div className="page-eyebrow">Workflow</div>
+        <h2 className="section-title">Upload, index, ask.</h2>
+        <p className="section-copy">
+          The interface is focused on the core workflow instead of decorative landing page sections.
+        </p>
+        <div className="section-actions">
+          <Button href="/admin">View dashboard</Button>
+          <Button href="/admin/documents">Review documents</Button>
+        </div>
+      </Surface>
     </div>
   );
 }

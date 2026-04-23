@@ -35,3 +35,8 @@ export type AdminStats = {
   failed_documents: number;
   total_sessions: number;
 };
+
+export type HealthConfig = {
+  status: string;
+  server_openai_key_configured: boolean;
+};
