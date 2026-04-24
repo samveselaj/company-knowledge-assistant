@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { listDocuments } from "@/lib/api";
 import { DocumentItem } from "@/lib/types";
+import AuthGate from "@/components/auth/AuthGate";
 import DocumentTable from "@/components/admin/DocumentTable";
 import PageHeader from "@/components/ui/PageHeader";
 import Surface from "@/components/ui/Surface";
@@ -51,7 +52,9 @@ export default function DocumentsPage() {
         title="Documents"
         description="Review uploaded files, track indexing status, and manage the current knowledge set."
       />
-      {loading ? <Surface className="state-card">Loading documents…</Surface> : <DocumentTable documents={docs} onRefresh={fetchDocs} />}
+      <AuthGate>
+        {loading ? <Surface className="state-card">Loading documents…</Surface> : <DocumentTable documents={docs} onRefresh={fetchDocs} />}
+      </AuthGate>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getHealthConfig } from "@/lib/api";
-import { getStoredOpenAiKey } from "@/lib/openai-key";
+import { AI_SETTINGS_CHANGED_EVENT, getStoredAiSettings } from "@/lib/openai-key";
 
 type Props = {
   onManageKey: () => void;
@@ -17,8 +17,17 @@ export default function ApiKeyNotice({ onManageKey }: Props) {
     async function load() {
       try {
         const config = await getHealthConfig();
+        const settings = getStoredAiSettings();
+        const hasOpenAiKey = Boolean(settings.providers.openai.apiKey);
+        const activeProviderSettings = settings.providers[settings.activeProvider];
+        const hasActiveProviderKey = Boolean(activeProviderSettings.apiKey);
+        const hasServerActiveProviderKey = Boolean(config.server_chat_keys_configured?.[settings.activeProvider]);
+
         if (active) {
-          setShowNotice(!config.server_openai_key_configured && !getStoredOpenAiKey());
+          setShowNotice(
+            (!config.server_openai_key_configured && !hasOpenAiKey) ||
+              (!hasServerActiveProviderKey && !hasActiveProviderKey),
+          );
         }
       } catch {
         if (active) {
@@ -29,11 +38,11 @@ export default function ApiKeyNotice({ onManageKey }: Props) {
 
     load();
     window.addEventListener("storage", load);
-    window.addEventListener("openai-key-changed", load as EventListener);
+    window.addEventListener(AI_SETTINGS_CHANGED_EVENT, load as EventListener);
     return () => {
       active = false;
       window.removeEventListener("storage", load);
-      window.removeEventListener("openai-key-changed", load as EventListener);
+      window.removeEventListener(AI_SETTINGS_CHANGED_EVENT, load as EventListener);
     };
   }, []);
 
@@ -44,7 +53,7 @@ export default function ApiKeyNotice({ onManageKey }: Props) {
   return (
     <div className="api-key-notice">
       <div>
-        <strong>OpenAI key required.</strong> Add your own key to chat and index documents in this hosted app.
+        <strong>API key required.</strong> Add an OpenAI key for retrieval and a provider key for chat answers.
       </div>
       <button type="button" className="notice-link" onClick={onManageKey}>
         Add key

@@ -1,12 +1,36 @@
-import { getStoredOpenAiKey } from "./openai-key";
+import { getStoredAiSettings } from "./openai-key";
+import { getStoredToken } from "./auth";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+async function parseResponse(res: Response) {
+  if (res.ok) {
+    return res.json();
+  }
+
+  let message = "Request failed";
+  try {
+    const data = await res.json();
+    message = data.detail || message;
+  } catch {
+    message = await res.text();
+  }
+  throw new Error(message);
+}
 
 function buildHeaders(headers: HeadersInit = {}) {
-  const openAiKey = getStoredOpenAiKey();
+  const settings = getStoredAiSettings();
+  const openAiKey = settings.providers.openai.apiKey;
+  const activeProviderSettings = settings.providers[settings.activeProvider];
+  const token = getStoredToken();
+
   return {
     ...headers,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(openAiKey ? { "x-openai-api-key": openAiKey } : {}),
+    "x-ai-provider": settings.activeProvider,
+    ...(activeProviderSettings.apiKey ? { "x-ai-api-key": activeProviderSettings.apiKey } : {}),
+    ...(activeProviderSettings.chatModel ? { "x-ai-chat-model": activeProviderSettings.chatModel } : {}),
   };
 }
 
@@ -16,14 +40,17 @@ export async function uploadDocument(formData: FormData) {
     body: formData,
     headers: buildHeaders(),
   });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return parseResponse(res);
 }
 
 export async function listDocuments() {
   const res = await fetch(`${API_BASE}/documents`, { cache: "no-store", headers: buildHeaders() });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return parseResponse(res);
+}
+
+export async function getDocument(documentId: string) {
+  const res = await fetch(`${API_BASE}/documents/${documentId}`, { cache: "no-store", headers: buildHeaders() });
+  return parseResponse(res);
 }
 
 export async function indexDocument(documentId: string) {
@@ -31,8 +58,15 @@ export async function indexDocument(documentId: string) {
     method: "POST",
     headers: buildHeaders(),
   });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return parseResponse(res);
+}
+
+export async function reindexDocument(documentId: string) {
+  const res = await fetch(`${API_BASE}/documents/${documentId}/reindex`, {
+    method: "POST",
+    headers: buildHeaders(),
+  });
+  return parseResponse(res);
 }
 
 export async function deleteDocument(documentId: string) {
@@ -40,8 +74,7 @@ export async function deleteDocument(documentId: string) {
     method: "DELETE",
     headers: buildHeaders(),
   });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return parseResponse(res);
 }
 
 export async function askQuestion(payload: { session_id?: string | null; question: string; department?: string | null }) {
@@ -50,8 +83,7 @@ export async function askQuestion(payload: { session_id?: string | null; questio
     headers: buildHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return parseResponse(res);
 }
 
 export async function submitFeedback(payload: { message_id: string; rating: string; comment?: string }) {
@@ -60,18 +92,15 @@ export async function submitFeedback(payload: { message_id: string; rating: stri
     headers: buildHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return parseResponse(res);
 }
 
 export async function getAdminStats() {
   const res = await fetch(`${API_BASE}/admin/stats`, { cache: "no-store", headers: buildHeaders() });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return parseResponse(res);
 }
 
 export async function getHealthConfig() {
   const res = await fetch(`${API_BASE}/health/config`, { cache: "no-store" });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+  return parseResponse(res);
 }

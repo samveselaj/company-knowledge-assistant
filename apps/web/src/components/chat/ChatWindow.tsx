@@ -23,8 +23,8 @@ export default function ChatWindow() {
       setSessionId(res.session_id);
       const assistantMsg: Msg = { role: "assistant", content: res.answer, citations: res.citations };
       setMessages((prev) => [...prev, assistantMsg]);
-    } catch {
-      setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, something went wrong. Please try again." }]);
+    } catch (error) {
+      setMessages((prev) => [...prev, { role: "assistant", content: (error as Error).message || "Sorry, something went wrong. Please try again." }]);
     } finally { setLoading(false); }
   };
 

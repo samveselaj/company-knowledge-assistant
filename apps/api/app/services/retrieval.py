@@ -1,11 +1,31 @@
 """Vector retrieval service."""
 
+import re
+
 from sqlalchemy.orm import Session
 
 from app.models.chunk import DocumentChunk
 from app.repositories.chunks import search_similar_chunks
 from app.services.embeddings import embed_text
 from app.core.logging import logger
+
+
+QUERY_EXPANSIONS = {
+    "mfa": "multi-factor authentication",
+    "pto": "paid time off",
+    "sla": "service level agreement",
+}
+
+
+def _expand_query_terms(question: str) -> str:
+    expansions = [
+        expansion
+        for term, expansion in QUERY_EXPANSIONS.items()
+        if re.search(rf"\b{re.escape(term)}\b", question, flags=re.IGNORECASE)
+    ]
+    if not expansions:
+        return question
+    return f"{question} ({'; '.join(expansions)})"
 
 
 def retrieve_relevant_chunks(
@@ -20,7 +40,7 @@ def retrieve_relevant_chunks(
     """
     logger.info(f"Retrieving chunks for question: {question[:80]}...")
 
-    query_embedding = embed_text(question, api_key=api_key)
+    query_embedding = embed_text(_expand_query_terms(question), api_key=api_key)
     chunks = search_similar_chunks(
         db,
         query_embedding=query_embedding,

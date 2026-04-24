@@ -4,8 +4,13 @@ sqlalchemy
 psycopg2-binary
 python-multipart
 pydantic-settings
+email-validator
 pgvector
 pypdf
 python-docx
 openai
+anthropic
+passlib[bcrypt]
+bcrypt==4.0.1
+python-jose[cryptography]
 alembic

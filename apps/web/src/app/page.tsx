@@ -1,8 +1,32 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import PageHeader from "@/components/ui/PageHeader";
 import Surface from "@/components/ui/Surface";
+import { AUTH_CHANGED_EVENT, fetchCurrentUser, getStoredUser } from "@/lib/auth";
+import type { AuthUser } from "@/lib/types";
 
 export default function Home() {
+  const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
+
+  useEffect(() => {
+    let active = true;
+    async function loadUser() {
+      const currentUser = await fetchCurrentUser();
+      if (active) {
+        setUser(currentUser);
+      }
+    }
+
+    loadUser();
+    window.addEventListener(AUTH_CHANGED_EVENT, loadUser as EventListener);
+    return () => {
+      active = false;
+      window.removeEventListener(AUTH_CHANGED_EVENT, loadUser as EventListener);
+    };
+  }, []);
+
   return (
     <div className="page">
       <PageHeader
@@ -11,10 +35,10 @@ export default function Home() {
         description="Upload internal documents, index them, and ask grounded questions with citations."
         actions={
           <>
-            <Button href="/chat" variant="primary">
-              Open chat
+            <Button href={user ? "/chat" : "/login?next=%2Fchat"} variant="primary">
+              {user ? "Open chat" : "Login"}
             </Button>
-            <Button href="/admin/upload">Upload documents</Button>
+            {user?.role === "admin" ? <Button href="/admin/upload">Upload documents</Button> : null}
           </>
         }
       />
@@ -58,8 +82,8 @@ export default function Home() {
           The interface is focused on the core workflow instead of decorative landing page sections.
         </p>
         <div className="section-actions">
-          <Button href="/admin">View dashboard</Button>
-          <Button href="/admin/documents">Review documents</Button>
+          {user?.role === "admin" ? <Button href="/admin">View dashboard</Button> : null}
+          {user ? <Button href="/admin/documents">Review documents</Button> : <Button href="/login?next=%2Fadmin%2Fdocuments">Review documents</Button>}
         </div>
       </Surface>
     </div>

@@ -39,4 +39,22 @@ export type AdminStats = {
 export type HealthConfig = {
   status: string;
   server_openai_key_configured: boolean;
+  server_chat_provider: string;
+  server_chat_key_configured: boolean;
+  server_chat_keys_configured: Record<string, boolean>;
+};
+
+export type UserRole = "admin" | "user";
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  role: UserRole;
+  created_at: string;
+};
+
+export type AuthResponse = {
+  access_token: string;
+  token_type: string;
+  user: AuthUser;
 };

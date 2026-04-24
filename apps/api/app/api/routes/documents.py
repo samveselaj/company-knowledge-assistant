@@ -6,9 +6,11 @@ import uuid
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
+from app.core.auth import get_current_user, require_admin
 from app.core.database import get_db
 from app.core.logging import logger
 from app.core.openai_key import resolve_openai_api_key
+from app.models.user import User
 from app.schemas.document import DocumentResponse, DocumentListResponse
 from app.schemas.common import StatusResponse
 from app.repositories.documents import (
@@ -32,6 +34,7 @@ async def upload_document(
     title: str = Form(None),
     department: str = Form(None),
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
 ):
     """Upload a document file and create a database record."""
     # Validate extension
@@ -74,6 +77,7 @@ def get_documents(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """List all uploaded documents."""
     docs = list_documents(db, skip=skip, limit=limit)
@@ -81,11 +85,25 @@ def get_documents(
     return DocumentListResponse(documents=docs, total=total)
 
 
+@router.get("/{document_id}", response_model=DocumentResponse)
+def get_document(
+    document_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get a single document."""
+    doc = get_document_by_id(db, document_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return doc
+
+
 @router.post("/{document_id}/index", response_model=StatusResponse)
 def trigger_indexing(
     document_id: uuid.UUID,
     db: Session = Depends(get_db),
     api_key: str = Depends(resolve_openai_api_key),
+    current_user: User = Depends(require_admin),
 ):
     """Trigger the indexing pipeline for a document."""
     doc = get_document_by_id(db, document_id)
@@ -99,10 +117,22 @@ def trigger_indexing(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/{document_id}/reindex", response_model=StatusResponse)
+def trigger_reindexing(
+    document_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    api_key: str = Depends(resolve_openai_api_key),
+    current_user: User = Depends(require_admin),
+):
+    """Re-run the indexing pipeline for a document."""
+    return trigger_indexing(document_id=document_id, db=db, api_key=api_key, current_user=current_user)
+
+
 @router.delete("/{document_id}", response_model=StatusResponse)
 def remove_document(
     document_id: uuid.UUID,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
 ):
     """Delete a document, its chunks, and the file from disk."""
     doc = get_document_by_id(db, document_id)

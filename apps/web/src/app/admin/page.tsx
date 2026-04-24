@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { getAdminStats } from "@/lib/api";
 import { AdminStats } from "@/lib/types";
+import AuthGate from "@/components/auth/AuthGate";
 import PageHeader from "@/components/ui/PageHeader";
 import Surface from "@/components/ui/Surface";
 
@@ -25,16 +26,18 @@ export default function AdminDashboard() {
         title="Overview"
         description="A quick snapshot of document volume, indexing health, and chat usage."
       />
-      {!stats ? <Surface className="state-card">Loading dashboard…</Surface> : (
-        <div className="stats-grid">
-          {cards.map((c) => (
-            <Surface className="stat-card" key={c.label}>
-              <div className="stat-label">{c.label}</div>
-              <div className="stat-value">{c.value}</div>
-            </Surface>
-          ))}
-        </div>
-      )}
+      <AuthGate allowedRoles={["admin"]}>
+        {!stats ? <Surface className="state-card">Loading dashboard…</Surface> : (
+          <div className="stats-grid">
+            {cards.map((c) => (
+              <Surface className="stat-card" key={c.label}>
+                <div className="stat-label">{c.label}</div>
+                <div className="stat-value">{c.value}</div>
+              </Surface>
+            ))}
+          </div>
+        )}
+      </AuthGate>
     </div>
   );
 }

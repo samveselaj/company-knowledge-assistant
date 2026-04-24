@@ -1,3 +1,4 @@
+import AuthGate from "@/components/auth/AuthGate";
 import UploadForm from "@/components/admin/UploadForm";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -9,7 +10,9 @@ export default function UploadPage() {
         title="Upload a document"
         description="Add a TXT, PDF, or DOCX file to the knowledge base with optional metadata."
       />
-      <UploadForm />
+      <AuthGate allowedRoles={["admin"]}>
+        <UploadForm />
+      </AuthGate>
     </div>
   );
 }

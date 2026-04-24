@@ -1,3 +1,4 @@
+import AuthGate from "@/components/auth/AuthGate";
 import ChatWindow from "@/components/chat/ChatWindow";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -9,7 +10,9 @@ export default function ChatPage() {
         title="Ask the knowledge base"
         description="Search across uploaded company documents and get grounded answers with citations."
       />
-      <ChatWindow />
+      <AuthGate>
+        <ChatWindow />
+      </AuthGate>
     </div>
   );
 }

@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ApiKeyManager from "./ApiKeyManager";
 import ApiKeyNotice from "./ApiKeyNotice";
 import ThemeToggle from "./ThemeToggle";
+import { AUTH_CHANGED_EVENT, clearAuthSession, fetchCurrentUser, getStoredUser } from "@/lib/auth";
+import type { AuthUser } from "@/lib/types";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -23,6 +25,40 @@ export default function AppShell({ children }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [apiKeyOpen, setApiKeyOpen] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadUser() {
+      const currentUser = await fetchCurrentUser();
+      if (active) {
+        setUser(currentUser);
+      }
+    }
+
+    loadUser();
+    window.addEventListener(AUTH_CHANGED_EVENT, loadUser as EventListener);
+    window.addEventListener("storage", loadUser);
+    return () => {
+      active = false;
+      window.removeEventListener(AUTH_CHANGED_EVENT, loadUser as EventListener);
+      window.removeEventListener("storage", loadUser);
+    };
+  }, []);
+
+  const visibleNavItems = navItems.filter((item) => {
+    if (!user) {
+      return item.href === "/";
+    }
+    if (item.href === "/admin/documents") {
+      return true;
+    }
+    if (item.href.startsWith("/admin")) {
+      return user.role === "admin";
+    }
+    return true;
+  });
 
   const isActiveRoute = (href: string) => {
     if (href === "/") {
@@ -48,7 +84,7 @@ export default function AppShell({ children }: Props) {
 
           <div className="topbar-actions">
             <nav className="desktop-nav" aria-label="Primary">
-              {navItems.map((item) => {
+              {visibleNavItems.map((item) => {
                 const isActive = isActiveRoute(item.href);
 
                 return (
@@ -64,9 +100,27 @@ export default function AppShell({ children }: Props) {
               })}
             </nav>
 
-            <button type="button" className={`utility-button${apiKeyOpen ? " active" : ""}`} onClick={() => setApiKeyOpen((value) => !value)}>
-              API Key
-            </button>
+            {user ? (
+              <button type="button" className={`utility-button${apiKeyOpen ? " active" : ""}`} onClick={() => setApiKeyOpen((value) => !value)}>
+                AI Provider
+              </button>
+            ) : null}
+            {user ? (
+              <button
+                type="button"
+                className="utility-button"
+                onClick={() => {
+                  clearAuthSession();
+                  setApiKeyOpen(false);
+                }}
+              >
+                Logout
+              </button>
+            ) : (
+              <Link href="/login" className="utility-button">
+                Login
+              </Link>
+            )}
             <ThemeToggle />
 
             <button
@@ -86,7 +140,7 @@ export default function AppShell({ children }: Props) {
           className={`mobile-nav${menuOpen ? " open" : ""}`}
           aria-hidden={!menuOpen}
         >
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const isActive = isActiveRoute(item.href);
 
             return (
@@ -100,14 +154,33 @@ export default function AppShell({ children }: Props) {
               </Link>
             );
           })}
-          <button type="button" className={`mobile-nav-link utility-mobile${apiKeyOpen ? " active" : ""}`} onClick={() => setApiKeyOpen((value) => !value)}>
-            API Key
-          </button>
+          {user ? (
+            <button type="button" className={`mobile-nav-link utility-mobile${apiKeyOpen ? " active" : ""}`} onClick={() => setApiKeyOpen((value) => !value)}>
+              AI Provider
+            </button>
+          ) : null}
+          {user ? (
+            <button
+              type="button"
+              className="mobile-nav-link utility-mobile"
+              onClick={() => {
+                clearAuthSession();
+                setMenuOpen(false);
+                setApiKeyOpen(false);
+              }}
+            >
+              Logout
+            </button>
+          ) : (
+            <Link href="/login" className="mobile-nav-link utility-mobile" onClick={() => setMenuOpen(false)}>
+              Login
+            </Link>
+          )}
         </div>
-        <ApiKeyNotice onManageKey={() => setApiKeyOpen(true)} />
+        {user ? <ApiKeyNotice onManageKey={() => setApiKeyOpen(true)} /> : null}
       </header>
 
-      {apiKeyOpen ? <ApiKeyManager onClose={() => setApiKeyOpen(false)} /> : null}
+      {apiKeyOpen && user ? <ApiKeyManager onClose={() => setApiKeyOpen(false)} /> : null}
       <main className="page-shell">{children}</main>
     </div>
   );

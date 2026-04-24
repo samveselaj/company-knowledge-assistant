@@ -3,9 +3,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.core.logging import logger
-from app.core.openai_key import resolve_openai_api_key
+from app.core.openai_key import ChatProviderConfig, resolve_chat_provider_config, resolve_openai_api_key
+from app.models.user import User
 from app.schemas.chat import AskRequest, AskResponse
 from app.repositories.chats import create_session, get_session_by_id, create_message
 from app.services.retrieval import retrieve_relevant_chunks
@@ -19,6 +21,8 @@ def ask_question(
     payload: AskRequest,
     db: Session = Depends(get_db),
     api_key: str = Depends(resolve_openai_api_key),
+    chat_config: ChatProviderConfig = Depends(resolve_chat_provider_config),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Core RAG endpoint.
@@ -51,7 +55,7 @@ def ask_question(
     )
 
     # 4. Generate answer
-    result = generate_answer(payload.question, chunks, api_key=api_key)
+    result = generate_answer(payload.question, chunks, chat_config=chat_config)
 
     # 5. Save assistant message with citations
     create_message(
