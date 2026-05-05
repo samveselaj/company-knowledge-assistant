@@ -20,11 +20,12 @@ type Props = {
 export default function AuthGate({ children, allowedRoles }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
+    setUser(getStoredUser());
 
     async function load() {
       const token = getStoredToken();
@@ -56,7 +57,16 @@ export default function AuthGate({ children, allowedRoles }: Props) {
   }, [pathname, router]);
 
   if (loading) {
-    return <Surface className="state-card">Checking access...</Surface>;
+    return (
+      <Surface className="state-card">
+        <div className="chat-status" role="status" aria-live="polite">
+          <span className="chat-status-dots" aria-hidden="true">
+            <span /><span /><span />
+          </span>
+          <span>Checking access…</span>
+        </div>
+      </Surface>
+    );
   }
 
   if (!user) {

@@ -27,11 +27,11 @@ export const CHAT_PROVIDER_OPTIONS: Array<{
     keyLabel: "OpenAI API key",
     keyPlaceholder: "sk-...",
     models: [
+      { id: "gpt-5.5", label: "GPT-5.5" },
+      { id: "gpt-5.4", label: "GPT-5.4" },
+      { id: "gpt-5.4-mini", label: "GPT-5.4 mini" },
+      { id: "gpt-5.4-nano", label: "GPT-5.4 nano" },
       { id: "gpt-5.2", label: "GPT-5.2" },
-      { id: "gpt-5.2-chat-latest", label: "GPT-5.2 Chat" },
-      { id: "gpt-5-mini", label: "GPT-5 mini" },
-      { id: "gpt-5-nano", label: "GPT-5 nano" },
-      { id: "gpt-4.1", label: "GPT-4.1" },
     ],
   },
   {
@@ -40,11 +40,11 @@ export const CHAT_PROVIDER_OPTIONS: Array<{
     keyLabel: "xAI API key",
     keyPlaceholder: "xai-...",
     models: [
+      { id: "grok-4.3", label: "Grok 4.3" },
       { id: "grok-4.20-reasoning", label: "Grok 4.20 reasoning" },
-      { id: "grok-4", label: "Grok 4" },
-      { id: "grok-4-fast-reasoning", label: "Grok 4 fast reasoning" },
-      { id: "grok-4-fast-non-reasoning", label: "Grok 4 fast" },
-      { id: "grok-3-mini", label: "Grok 3 mini" },
+      { id: "grok-4.20", label: "Grok 4.20" },
+      { id: "grok-4.1-fast-reasoning", label: "Grok 4.1 Fast reasoning" },
+      { id: "grok-4.1-fast", label: "Grok 4.1 Fast" },
     ],
   },
   {
@@ -53,11 +53,11 @@ export const CHAT_PROVIDER_OPTIONS: Array<{
     keyLabel: "Anthropic API key",
     keyPlaceholder: "sk-ant-...",
     models: [
+      { id: "claude-opus-4-7", label: "Claude Opus 4.7" },
+      { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6" },
+      { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5" },
       { id: "claude-opus-4-1-20250805", label: "Claude Opus 4.1" },
-      { id: "claude-opus-4-20250514", label: "Claude Opus 4" },
       { id: "claude-sonnet-4-20250514", label: "Claude Sonnet 4" },
-      { id: "claude-3-7-sonnet-20250219", label: "Claude Sonnet 3.7" },
-      { id: "claude-3-5-haiku-20241022", label: "Claude Haiku 3.5" },
     ],
   },
 ];
@@ -65,9 +65,9 @@ export const CHAT_PROVIDER_OPTIONS: Array<{
 export const DEFAULT_AI_SETTINGS: AiSettings = {
   activeProvider: "openai",
   providers: {
-    openai: { apiKey: "", chatModel: "gpt-5.2" },
-    grok: { apiKey: "", chatModel: "grok-4.20-reasoning" },
-    claude: { apiKey: "", chatModel: "claude-sonnet-4-20250514" },
+    openai: { apiKey: "", chatModel: "gpt-5.5" },
+    grok: { apiKey: "", chatModel: "grok-4.3" },
+    claude: { apiKey: "", chatModel: "claude-sonnet-4-6" },
   },
 };
 

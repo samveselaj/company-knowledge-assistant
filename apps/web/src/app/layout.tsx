@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import "./globals.css";
 import AppShell from "@/components/ui/AppShell";
 
@@ -8,6 +7,8 @@ export const metadata: Metadata = {
   description: "AI-powered internal knowledge assistant with RAG",
 };
 
+const themeInitScript = `(function(){try{var s=localStorage.getItem("company-knowledge-theme");var t=s||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t;}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -15,18 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
-        <Script id="theme-init" strategy="beforeInteractive">
-          {`
-            (function() {
-              try {
-                var saved = localStorage.getItem("company-knowledge-theme");
-                var theme = saved || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-                document.documentElement.dataset.theme = theme;
-              } catch (error) {}
-            })();
-          `}
-        </Script>
         <AppShell>{children}</AppShell>
       </body>
     </html>

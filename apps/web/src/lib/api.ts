@@ -104,3 +104,10 @@ export async function getHealthConfig() {
   const res = await fetch(`${API_BASE}/health/config`, { cache: "no-store" });
   return parseResponse(res);
 }
+
+export async function getProviderModels(provider: string, options?: { refresh?: boolean }) {
+  const url = new URL(`${API_BASE}/providers/${provider}/models`);
+  if (options?.refresh) url.searchParams.set("refresh", "true");
+  const res = await fetch(url.toString(), { cache: "no-store", headers: buildHeaders() });
+  return parseResponse(res);
+}

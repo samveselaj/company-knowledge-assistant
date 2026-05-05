@@ -25,10 +25,14 @@ export default function AppShell({ children }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [apiKeyOpen, setApiKeyOpen] = useState(false);
-  const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     let active = true;
+
+    setUser(getStoredUser());
+    setHydrated(true);
 
     async function loadUser() {
       const currentUser = await fetchCurrentUser();
@@ -47,18 +51,22 @@ export default function AppShell({ children }: Props) {
     };
   }, []);
 
-  const visibleNavItems = navItems.filter((item) => {
-    if (!user) {
-      return item.href === "/";
-    }
-    if (item.href === "/admin/documents") {
-      return true;
-    }
-    if (item.href.startsWith("/admin")) {
-      return user.role === "admin";
-    }
-    return true;
-  });
+  const visibleNavItems = !hydrated
+    ? navItems.filter((item) => item.href === "/")
+    : navItems.filter((item) => {
+        if (!user) {
+          return item.href === "/";
+        }
+        if (item.href === "/admin/documents") {
+          return true;
+        }
+        if (item.href.startsWith("/admin")) {
+          return user.role === "admin";
+        }
+        return true;
+      });
+
+  const showAuthControls = hydrated;
 
   const isActiveRoute = (href: string) => {
     if (href === "/") {
@@ -100,27 +108,29 @@ export default function AppShell({ children }: Props) {
               })}
             </nav>
 
-            {user ? (
+            {showAuthControls && user ? (
               <button type="button" className={`utility-button${apiKeyOpen ? " active" : ""}`} onClick={() => setApiKeyOpen((value) => !value)}>
                 AI Provider
               </button>
             ) : null}
-            {user ? (
-              <button
-                type="button"
-                className="utility-button"
-                onClick={() => {
-                  clearAuthSession();
-                  setApiKeyOpen(false);
-                }}
-              >
-                Logout
-              </button>
-            ) : (
-              <Link href="/login" className="utility-button">
-                Login
-              </Link>
-            )}
+            {showAuthControls ? (
+              user ? (
+                <button
+                  type="button"
+                  className="utility-button"
+                  onClick={() => {
+                    clearAuthSession();
+                    setApiKeyOpen(false);
+                  }}
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link href="/login" className="utility-button">
+                  Login
+                </Link>
+              )
+            ) : null}
             <ThemeToggle />
 
             <button
@@ -154,30 +164,32 @@ export default function AppShell({ children }: Props) {
               </Link>
             );
           })}
-          {user ? (
+          {showAuthControls && user ? (
             <button type="button" className={`mobile-nav-link utility-mobile${apiKeyOpen ? " active" : ""}`} onClick={() => setApiKeyOpen((value) => !value)}>
               AI Provider
             </button>
           ) : null}
-          {user ? (
-            <button
-              type="button"
-              className="mobile-nav-link utility-mobile"
-              onClick={() => {
-                clearAuthSession();
-                setMenuOpen(false);
-                setApiKeyOpen(false);
-              }}
-            >
-              Logout
-            </button>
-          ) : (
-            <Link href="/login" className="mobile-nav-link utility-mobile" onClick={() => setMenuOpen(false)}>
-              Login
-            </Link>
-          )}
+          {showAuthControls ? (
+            user ? (
+              <button
+                type="button"
+                className="mobile-nav-link utility-mobile"
+                onClick={() => {
+                  clearAuthSession();
+                  setMenuOpen(false);
+                  setApiKeyOpen(false);
+                }}
+              >
+                Logout
+              </button>
+            ) : (
+              <Link href="/login" className="mobile-nav-link utility-mobile" onClick={() => setMenuOpen(false)}>
+                Login
+              </Link>
+            )
+          ) : null}
         </div>
-        {user ? <ApiKeyNotice onManageKey={() => setApiKeyOpen(true)} /> : null}
+        {showAuthControls && user ? <ApiKeyNotice onManageKey={() => setApiKeyOpen(true)} /> : null}
       </header>
 
       {apiKeyOpen && user ? <ApiKeyManager onClose={() => setApiKeyOpen(false)} /> : null}

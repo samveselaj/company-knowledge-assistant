@@ -27,7 +27,16 @@ export default function AdminDashboard() {
         description="A quick snapshot of document volume, indexing health, and chat usage."
       />
       <AuthGate allowedRoles={["admin"]}>
-        {!stats ? <Surface className="state-card">Loading dashboard…</Surface> : (
+        {!stats ? (
+          <Surface className="state-card">
+            <div className="chat-status" role="status" aria-live="polite">
+              <span className="chat-status-dots" aria-hidden="true">
+                <span /><span /><span />
+              </span>
+              <span>Loading dashboard…</span>
+            </div>
+          </Surface>
+        ) : (
           <div className="stats-grid">
             {cards.map((c) => (
               <Surface className="stat-card" key={c.label}>

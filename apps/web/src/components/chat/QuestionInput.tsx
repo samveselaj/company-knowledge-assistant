@@ -37,7 +37,7 @@ export default function QuestionInput({ onSubmit, disabled }: Props) {
         <div className="question-input-meta">
           <span className="field-hint">Press Enter to send, Shift+Enter for a new line.</span>
           <Button variant="primary" onClick={handleSubmit} disabled={!text.trim() || disabled} id="send-button">
-            {disabled ? "Sending…" : "Send"}
+            {disabled ? "Generating…" : "Send"}
           </Button>
         </div>
       </div>

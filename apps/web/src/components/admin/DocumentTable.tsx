@@ -13,11 +13,12 @@ type Props = { documents: DocumentItem[]; onRefresh: () => void };
 export default function DocumentTable({ documents, onRefresh }: Props) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
+  const [user, setUser] = useState<AuthUser | null>(null);
   const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     let active = true;
+    setUser(getStoredUser());
     async function loadUser() {
       const currentUser = await fetchCurrentUser();
       if (active) {

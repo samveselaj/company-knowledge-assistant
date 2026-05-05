@@ -53,7 +53,18 @@ export default function DocumentsPage() {
         description="Review uploaded files, track indexing status, and manage the current knowledge set."
       />
       <AuthGate>
-        {loading ? <Surface className="state-card">Loading documents…</Surface> : <DocumentTable documents={docs} onRefresh={fetchDocs} />}
+        {loading ? (
+          <Surface className="state-card">
+            <div className="chat-status" role="status" aria-live="polite">
+              <span className="chat-status-dots" aria-hidden="true">
+                <span /><span /><span />
+              </span>
+              <span>Loading documents…</span>
+            </div>
+          </Surface>
+        ) : (
+          <DocumentTable documents={docs} onRefresh={fetchDocs} />
+        )}
       </AuthGate>
     </div>
   );
